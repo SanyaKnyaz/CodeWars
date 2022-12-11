@@ -1,0 +1,13 @@
+'''
+Permutations
+https://www.codewars.com/kata/5254ca2719453dcc0b00027d
+'''
+def permutations(s):
+    res = set([s])
+    if len(s) == 2:
+        res.add(s[1] + s[0])
+    elif len(s) > 2:
+        for i, a in enumerate(s):
+            for b in permutations(s[:i] + s[i+1:]):
+                res.add(a+b)
+    return list(res)
