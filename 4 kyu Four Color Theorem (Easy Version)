@@ -1,0 +1,19 @@
+'''
+Four Color Theorem (Easy Version)
+https://www.codewars.com/kata/5f88a18855c6c100283b3773
+'''
+from itertools import product
+
+def color(testmap):
+    m = {r:i for i,r in enumerate(set(testmap.replace('\n','')))}
+    g = testmap.strip().split('\n')
+    h,w = len(g),len(g[0])
+    adj = set()
+    for y,x in product(range(h),range(w)):
+        if y+1<h and g[y][x] != g[y+1][x]: adj.add((g[y][x],g[y+1][x]))
+        if x+1<w and g[y][x] != g[y][x+1]: adj.add((g[y][x],g[y][x+1]))
+    for s in range(4):
+        for p in product(range(s),repeat=len(m)):
+            if all(p[m[a]] != p[m[b]] for a,b in adj):
+                return s
+    return 4
