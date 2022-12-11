@@ -1,0 +1,58 @@
+'''
+Complete the photo pattern
+https://www.codewars.com/kata/58477f76ad2567b465000153
+'''
+from collections import deque
+from itertools import chain
+
+blueprint = [*map(''.join, zip(*'''\
+  + +  
+ +o o+ 
++  u  +
+ + ~ + 
+   |   
+ +-o-+ 
+/| o |\\
+ +-o-+ 
+'''.splitlines()))]
+
+def person(leg):
+    yield from (col + ('I'.rjust(leg, '|') if i in (2, 4) else ' '*leg) for i,col in enumerate(blueprint))
+
+def arms(x, y):
+    mini = min(x or y, y or x)+1
+    if x:
+        if y: yield from ('\\'.ljust(i) for i in range(x+1, y+1, -1))
+        yield f"_{' '*mini}"
+    if y:
+        yield f"_{' '*mini}"
+        if x: yield from ('/'.ljust(i) for i in range(x+2, y+2))
+
+def pattern(legs):
+    q = deque()
+    for i,x in enumerate(sorted(legs, reverse=True)):
+        (deque.append, deque.appendleft)[i&1](q, x)
+    
+    it, res = iter(q), []
+    res.append(arms(None, next(it)))
+    for x,y in zip(q, chain(it, [None])):
+        res.append(person(x))
+        res.append(arms(x, y))
+        
+    max_size = max(legs)+8
+    return '\n'.join(map(''.join, zip(*(x.rjust(max_size) for x in chain.from_iterable(res)))))
+
+def person_foot_ahead(n, left=0, right=0):
+    return [
+        " "+" "*min(left or n, n)+"_",  
+        *(" "+" "*x+"/" for x in range(left or n, n)),
+        " "+" "*(n-1)+" /   +",  
+        " "+" "*(n-1)+"+|+ + +", 
+        "I"+"|"*(n-1)+"- -   o+",
+        " "+" "*(n-1)+"ooo|~u",  
+        "I"+"|"*(n-1)+"- -   o+",
+        " "+" "*(n-1)+"+|+ + +", 
+        " "+" "*(n-1)+" \   +",
+        *(" "*x+"\\" for x in range(n, right or n, -1)),
+        " "+" "*min(n, right or n)+"_",      
+    ]
